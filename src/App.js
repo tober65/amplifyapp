@@ -18,6 +18,10 @@ import {
   createNote as createNoteMutation,
   deleteNote as deleteNoteMutation,
 } from "./graphql/mutations";
+import { Amplify } from 'aws-amplify';
+import config from './aws-exports.js';
+
+Amplify.configure(config);
 
 const App = ({ signOut }) => {
   const [notes, setNotes] = useState([]);
@@ -27,21 +31,27 @@ const App = ({ signOut }) => {
   useEffect(() => {
     fetchNotes();
   }, []);
-
+  
   async function fetchNotes() {
-  const apiData = await client.graphql({ query: listNotes });
-  const notesFromAPI = apiData.data.listNotes.items;
-  await Promise.all(
-    notesFromAPI.map(async (note) => {
-      if (note.image) {
-        const url = await getUrl.get(note.name);
-        note.image = url;
-      }
-      return note;
-    })
-  );
-  setNotes(notesFromAPI);
-}
+    const apiData = await client.graphql({ query: listNotes });
+    const notesFromAPI = apiData.data.listNotes.items;
+    setNotes(notesFromAPI);
+  }
+
+//   async function fetchNotes() {
+//   const apiData = await client.graphql({ query: listNotes });
+//   const notesFromAPI = apiData.data.listNotes.items;
+//   await Promise.all(
+//     notesFromAPI.map(async (note) => {
+//       if (note.image) {
+//         const url = await getUrl.get(note.name);
+//         note.image = url;
+//       }
+//       return note;
+//     })
+//   );
+//   setNotes(notesFromAPI);
+// }
 
   async function createNote(event) {
   event.preventDefault();
